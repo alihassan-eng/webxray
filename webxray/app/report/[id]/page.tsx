@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
 import { saveLeadEmailAction } from '../../actions/audit';
 import { LiveScanProgress } from '../../../components/LiveScanProgress';
 
@@ -32,6 +31,7 @@ interface ReportResponse {
 
 export default function ReportPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const [data, setData] = useState<ReportResponse | null>(null);
   const [leadEmail, setLeadEmail] = useState('');
   const [leadSaved, setLeadSaved] = useState(false);
@@ -91,12 +91,13 @@ export default function ReportPage() {
             {data.errorMessage ||
               'The target site blocked automated browsers or timed out.'}
           </p>
-          <Link
-            href="/"
-            className="mt-6 inline-block rounded-xl bg-emerald-500 px-6 py-3 text-sm font-bold text-slate-950"
+          <button
+            type="button"
+            onClick={() => router.push('/')}
+            className="mt-6 inline-block cursor-pointer rounded-xl bg-emerald-500 px-6 py-3 text-sm font-bold text-slate-950"
           >
             Try Another URL
-          </Link>
+          </button>
         </div>
       </main>
     );
@@ -113,12 +114,13 @@ export default function ReportPage() {
       <div className="mx-auto max-w-5xl">
         {/* Top Nav */}
         <div className="mb-8 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-sm font-semibold text-slate-400 hover:text-white"
+          <button
+            type="button"
+            onClick={() => router.push('/')}
+            className="cursor-pointer text-sm font-semibold text-slate-400 hover:text-white"
           >
             ← Scan Another Site
-          </Link>
+          </button>
           <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
             {data.isUnlocked ? 'Full Report Unlocked' : 'Free Preview Mode'}
           </span>
@@ -145,8 +147,8 @@ export default function ReportPage() {
                       s.value >= 80
                         ? 'text-emerald-400'
                         : s.value >= 55
-                          ? 'text-amber-400'
-                          : 'text-rose-400'
+                        ? 'text-amber-400'
+                        : 'text-rose-400'
                     }`}
                   >
                     {s.value}
@@ -164,6 +166,7 @@ export default function ReportPage() {
               <p className="mb-2 text-xs text-slate-400">
                 iPhone 14 Viewport (390×844)
               </p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={data.screenshotUrl}
                 alt="Mobile screenshot"
@@ -256,11 +259,11 @@ export default function ReportPage() {
                   if (baseCheckoutUrl) {
                     window.open(
                       `${baseCheckoutUrl}?checkout[custom][audit_id]=${data.id}`,
-                      '_self',
+                      '_self'
                     );
                   } else {
                     alert(
-                      'Add NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL in Vercel to open live $29 checkout!',
+                      'Add NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL in Vercel to open live $29 checkout!'
                     );
                   }
                 }}
