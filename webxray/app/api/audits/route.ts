@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { createAuditRecord, updateAuditRecord } from '@/db';
-import { inngest } from '@/inngest/client';
 import { runXrayScan } from '@/lib/xray-engine';
 import { analyzeTelemetryWithAI } from '@/lib/ai-analyzer';
 
-async function runDirectFallback(auditId: string, targetUrl: string) {
+export const maxDuration = 60;
+
+async function executeAuditPipeline(auditId: string, targetUrl: string) {
   try {
     await updateAuditRecord(auditId, { status: 'SCANNING' });
     const telemetry = await runXrayScan(targetUrl);
@@ -20,6 +21,7 @@ async function runDirectFallback(auditId: string, targetUrl: string) {
       issues: aiReport.issues,
     });
   } catch (err) {
+    console.error('Audit pipeline error:', err);
     await updateAuditRecord(auditId, {
       status: 'FAILED',
       errorMessage: err instanceof Error ? err.message : 'Scan failed',
@@ -38,14 +40,9 @@ export async function POST(req: Request) {
     const targetUrl = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`;
     const audit = await createAuditRecord(targetUrl);
 
-    try {
-      await inngest.send({
-        name: 'xray/audit.requested',
-        data: { auditId: audit.id, targetUrl },
-      });
-    } catch {
-      void runDirectFallback(audit.id, targetUrl);
-    }
+    after(async () => {
+      await executeAuditPipeline(audit.id, targetUrl);
+    });
 
     return NextResponse.json({ id: audit.id });
   } catch (err) {
