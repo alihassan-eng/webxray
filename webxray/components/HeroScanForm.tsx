@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export function HeroScanForm() {
@@ -8,6 +8,17 @@ export function HeroScanForm() {
   const [url, setUrl] = useState('');
   const [busy, setBusy] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    const resetForm = () => {
+      setUrl('');
+      setBusy(false);
+      setErrorMsg('');
+    };
+    resetForm();
+    window.addEventListener('pageshow', resetForm);
+    return () => window.removeEventListener('pageshow', resetForm);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,7 +35,8 @@ export function HeroScanForm() {
         body: JSON.stringify({ url: trimmed }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
       if (!res.ok || !data?.id) {
         throw new Error(data?.error || 'Failed to start scan.');
       }

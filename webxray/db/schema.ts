@@ -1,4 +1,12 @@
-import { pgTable, uuid, text, integer, jsonb, boolean, timestamp } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  uuid,
+  text,
+  integer,
+  jsonb,
+  boolean,
+  timestamp,
+} from 'drizzle-orm/pg-core';
 
 export type AuditIssue = {
   id: string;
@@ -28,5 +36,15 @@ export const audits = pgTable('audits', {
   paymentId: text('payment_id'),
   leadEmail: text('lead_email'),
 
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+export const leads = pgTable('leads', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  auditId: uuid('audit_id')
+    .references(() => audits.id)
+    .notNull(),
+  email: text('email').notNull(),
+  targetUrl: text('target_url').notNull(),
+  status: text('status').default('NEW').notNull(), // NEW | CONTACTED | CLOSED
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
