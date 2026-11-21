@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   outputFileTracingIncludes: {
     '/api/inngest': ['./node_modules/playwright-core/**/*', './node_modules/.pnpm/playwright-core*/**/*'],
+    '/api/audits': ['./node_modules/playwright-core/**/*', './node_modules/.pnpm/playwright-core*/**/*'],
   },
   turbopack: {
     rules: {
