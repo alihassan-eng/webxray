@@ -70,9 +70,9 @@ export default function ReportPage() {
     await saveLeadEmailAction(data.id, leadEmail);
     setLeadSaved(true);
   }
-  
+
   if (!data || data.status === 'PENDING' || data.status === 'SCANNING') {
-       return (
+    return (
       <LiveScanProgress
         targetUrl={data?.targetUrl}
         status={data?.status === 'SCANNING' ? 'SCANNING' : 'PENDING'}
@@ -145,8 +145,8 @@ export default function ReportPage() {
                       s.value >= 80
                         ? 'text-emerald-400'
                         : s.value >= 55
-                        ? 'text-amber-400'
-                        : 'text-rose-400'
+                          ? 'text-amber-400'
+                          : 'text-rose-400'
                     }`}
                   >
                     {s.value}
@@ -256,11 +256,11 @@ export default function ReportPage() {
                   if (baseCheckoutUrl) {
                     window.open(
                       `${baseCheckoutUrl}?checkout[custom][audit_id]=${data.id}`,
-                      '_self'
+                      '_self',
                     );
                   } else {
                     alert(
-                      'Add NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL in Vercel to open live $29 checkout!'
+                      'Add NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL in Vercel to open live $29 checkout!',
                     );
                   }
                 }}

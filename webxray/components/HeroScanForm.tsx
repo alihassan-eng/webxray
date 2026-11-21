@@ -1,28 +1,41 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { startAuditAction } from '../app/actions/audit';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export function HeroScanForm() {
+  const router = useRouter();
   const [url, setUrl] = useState('');
-  const [isQueuing, setIsQueuing] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [busy, setBusy] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const busy = isQueuing || isPending;
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const trimmed = url.trim();
     if (!trimmed || busy) return;
 
-    setIsQueuing(true);
+    setBusy(true);
+    setErrorMsg('');
 
-    const formData = new FormData();
-    formData.set('url', trimmed);
+    try {
+      const res = await fetch('/api/audits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: trimmed }),
+      });
 
-    startTransition(() => {
-      startAuditAction(formData);
-    });
+      const data = await res.json();
+      if (!res.ok || !data?.id) {
+        throw new Error(data?.error || 'Failed to start scan.');
+      }
+
+      router.push(`/report/${data.id}`);
+    } catch (err) {
+      setBusy(false);
+      setErrorMsg(
+        err instanceof Error ? err.message : 'Network error. Please try again.'
+      );
+    }
   }
 
   return (
@@ -62,13 +75,19 @@ export function HeroScanForm() {
         </button>
       </form>
 
-      {busy && (
+      {busy && !errorMsg && (
         <p
           role="status"
           aria-live="polite"
           className="mt-3 text-xs font-medium text-emerald-300"
         >
           Setting up your scan session and connecting to the audit queue...
+        </p>
+      )}
+
+      {errorMsg && (
+        <p className="mt-3 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">
+          {errorMsg}
         </p>
       )}
     </div>
