@@ -55,14 +55,20 @@ export async function runXrayScan(rawUrl: string): Promise<XrayTelemetry> {
   delete cleanEnv.LD_LIBRARY_PATH;
   delete cleanEnv.NODE_OPTIONS;
 
-    const browser = process.env.BROWSERLESS_URL
-    ? await chromium.connectOverCDP(process.env.BROWSERLESS_URL)
+    const rawBrowserless = process.env.BROWSERLESS_URL?.trim();
+  const browserlessEndpoint = rawBrowserless
+    ? rawBrowserless.startsWith('ws')
+      ? rawBrowserless
+      : `wss://production-sfo.browserless.io?token=${rawBrowserless}`
+    : undefined;
+
+  const browser = browserlessEndpoint
+    ? await chromium.connectOverCDP(browserlessEndpoint)
     : await chromium.launch({
         headless: true,
         env: cleanEnv,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
       });
-
   try {
     const context = await browser.newContext({
       viewport: { width: 390, height: 844 },
