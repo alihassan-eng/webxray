@@ -1,5 +1,6 @@
 // lib/xray-engine.ts
-import { chromium } from 'playwright';
+import { chromium } from 'playwright-core';
+
 
 export interface XrayTelemetry {
   targetUrl: string;
