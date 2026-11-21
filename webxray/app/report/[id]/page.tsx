@@ -93,7 +93,7 @@ export default function ReportPage() {
           </p>
           <button
             type="button"
-            onClick={() => router.push('/')}
+            onClick={() => window.location.assign('/')}
             className="mt-6 inline-block cursor-pointer rounded-xl bg-emerald-500 px-6 py-3 text-sm font-bold text-slate-950"
           >
             Try Another URL
@@ -116,7 +116,7 @@ export default function ReportPage() {
         <div className="mb-8 flex items-center justify-between">
           <button
             type="button"
-            onClick={() => router.push('/')}
+            onClick={() => window.location.assign('/')}
             className="cursor-pointer text-sm font-semibold text-slate-400 hover:text-white"
           >
             ← Scan Another Site
