@@ -27,37 +27,9 @@ WebXray is a full-stack B2B SaaS diagnostic engine that inspects any live websit
 
 ---
 
-## Local Setup
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com
-   cd webxray
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   pnpm install
-   ```
-
-3. **Configure environment variables (`.env`):**
-   ```env
-   DATABASE_URL="your_neon_postgres_url"
-   BROWSERLESS_URL="wss://production-sfo.browserless.io?token=your_token"
-   GOOGLE_GENERATIVE_AI_API_KEY="your_gemini_api_key"
-   RESEND_API_KEY="your_resend_api_key"
-   ```
-
-4. **Run the development server:**
-   ```bash
-   pnpm dev
-   ```
-
----
-
 ## Author
 
 **Ali Hassan** — Full-Stack Product Engineer  
-- **Live Product:** [webxray-virid.vercel.app](https://vercel.app)  
-- **LinkedIn:** [://linkedin.com](https://www.://linkedin.com)  
+- **Live Product:** [https://vercel.app](https://vercel.app)  
+- **LinkedIn:** [https://linkedin.com](https://linkedin.com)  
 - **X (Twitter):** [@alihassan_eng](https://x.com) | [@WebXrayApp](https://x.com)
