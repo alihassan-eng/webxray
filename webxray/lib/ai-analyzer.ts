@@ -19,7 +19,7 @@ const AuditReportSchema = z.object({
         technicalFix: z.string(),
       })
     )
-    .min(1)
+    .min(0)
     .max(12),
 });
 
@@ -131,17 +131,7 @@ function buildFallbackReport(t: XrayTelemetry): AiAuditReport {
     });
   }
 
-  if (issues.length === 0) {
-    issues.push({
-      id: 'cro-edge-prerender',
-      category: 'PERFORMANCE',
-      severity: 'WARNING',
-      title: 'Add Speculative Prefetching for Instant Sub-Page Transitions',
-      businessImpact:
-        'Pre-warming high-intent conversion routes reduces mobile navigation latency to near-zero on 4G connections.',
-      technicalFix: `<Link href="/contact" prefetch={true}>Book Engineering Fix</Link>`,
-    });
-  }
+
 
   const securityScore = t.finalUrl.startsWith('https://')
     ? Math.min(
