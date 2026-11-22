@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WebXray — 30-Second Mobile Website & Code Diagnostics
 
-## Getting Started
+**Live Production App:** [https://vercel.app](https://vercel.app)
 
-First, run the development server:
+WebXray is a full-stack B2B SaaS diagnostic engine that inspects any live website inside a real **iPhone 14 mobile viewport (`390×844`)** in under 30 seconds. It identifies mobile layout bugs, server TTFB bottlenecks, missing security headers, and SEO gaps—delivering both copy-paste production code fixes (`$29`) and done-for-you engineering remediation (`$499+`).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Real Mobile Viewport Telemetry:** Uses headless Chromium (`Playwright`) emulated as an iPhone 14 to capture live mobile screenshots, horizontal overflow bugs, console/runtime errors, and asset sizes.
+- **Dual-Layer AI & Deterministic Analysis:** Combines **Google Gemini AI** with a calibrated deterministic telemetry fallback engine to ensure 99.9% report reliability even on bot-protected sites.
+- **Security & SEO Hardening Audits:** Verifies `Strict-Transport-Security (HSTS)`, `Content-Security-Policy (CSP)`, `X-Frame-Options`, OpenGraph cards, and meta tags.
+- **Dual Monetization & Instant Alerts:**
+  - **Self-Serve Unlock (`$29`):** Integrated with **Paddle** webhooks for automated report unlocking.
+  - **Done-For-You Engineering (`$499+`):** Captures qualified B2B leads in PostgreSQL and triggers instant email notifications via **Resend**.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Frontend:** Next.js 16 (App Router), React, TypeScript, Tailwind CSS
+- **Backend & Database:** Next.js Server Actions & Route Handlers, PostgreSQL (Neon), Drizzle ORM
+- **Browser Automation & AI:** Playwright Core, Vercel AI SDK (`@ai-sdk/google` — Gemini 2.5 Flash)
+- **Payments & Notifications:** Paddle (Merchant of Record), Resend Email API
+- **Deployment & Security:** Vercel CI/CD, strict CSP/HSTS headers (`100/100` Security & SEO score)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Local Setup
 
-## Deploy on Vercel
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com
+   cd webxray
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Install dependencies:**
+   ```bash
+   pnpm install
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Configure environment variables (`.env`):**
+   ```env
+   DATABASE_URL="your_neon_postgres_url"
+   BROWSERLESS_URL="wss://production-sfo.browserless.io?token=your_token"
+   GOOGLE_GENERATIVE_AI_API_KEY="your_gemini_api_key"
+   RESEND_API_KEY="your_resend_api_key"
+   ```
+
+4. **Run the development server:**
+   ```bash
+   pnpm dev
+   ```
+
+---
+
+## Author
+
+**Ali Hassan** — Full-Stack Product Engineer  
+- **Live Product:** [webxray-virid.vercel.app](https://vercel.app)  
+- **LinkedIn:** [://linkedin.com](https://www.://linkedin.com)  
+- **X (Twitter):** [@alihassan_eng](https://x.com) | [@WebXrayApp](https://x.com)
