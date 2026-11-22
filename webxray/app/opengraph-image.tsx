@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const alt = 'WebXray — 30-Second Mobile Website & Code Diagnostics';
+export const alt = 'WebXray — 30s Mobile Website & Code Diagnostics';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -16,47 +16,42 @@ export default function OpenGraphImage() {
           justifyContent: 'space-between',
           backgroundColor: '#020617',
           backgroundImage:
-            'radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.22), transparent 50%)',
-          padding: '64px',
+            'radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.28), transparent 55%)',
+          padding: '72px',
           color: '#f8fafc',
           fontFamily: 'sans-serif',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <div
             style={{
               display: 'flex',
-              height: '20px',
-              width: '20px',
+              height: '28px',
+              width: '28px',
               borderRadius: '9999px',
               backgroundColor: '#34d399',
             }}
           />
-          <span style={{ fontSize: '32px', fontWeight: 800, letterSpacing: '-0.02em' }}>
+          <span style={{ fontSize: '46px', fontWeight: 900, letterSpacing: '-0.02em' }}>
             WebXray
-          </span>
-          <span
-            style={{
-              display: 'flex',
-              marginLeft: '16px',
-              borderRadius: '9999px',
-              border: '1px solid rgba(52, 211, 153, 0.4)',
-              backgroundColor: 'rgba(16, 185, 129, 0.12)',
-              padding: '6px 18px',
-              fontSize: '18px',
-              color: '#6ee7b7',
-            }}
-          >
-            Free 30s Mobile &amp; Code Audit
           </span>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '940px' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', fontSize: '60px', fontWeight: 800, lineHeight: 1.12 }}>
-            Find out why visitors are leaving your website in 30 seconds.
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              fontSize: '74px',
+              fontWeight: 900,
+              lineHeight: 1.08,
+              letterSpacing: '-0.03em',
+            }}
+          >
+            Fix Why Visitors Leave Your Site in 30s.
           </div>
-          <div style={{ display: 'flex', fontSize: '26px', color: '#94a3b8', lineHeight: 1.4 }}>
-            Real iPhone 14 Viewport • Speed &amp; TTFB • Security Headers • Copy-Paste Code Fixes
+          <div style={{ display: 'flex', fontSize: '34px', fontWeight: 600, color: '#34d399' }}>
+            Mobile Speed • Security • SEO • Code Fixes
           </div>
         </div>
 
@@ -65,14 +60,15 @@ export default function OpenGraphImage() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            borderTop: '1px solid #1e293b',
-            paddingTop: '24px',
-            fontSize: '22px',
-            color: '#64748b',
+            borderTop: '2px solid #1e293b',
+            paddingTop: '28px',
+            fontSize: '30px',
+            fontWeight: 700,
+            color: '#94a3b8',
           }}
         >
           <span>webxray-virid.vercel.app</span>
-          <span style={{ color: '#34d399', fontWeight: 700 }}>Instant Diagnostic X-Ray →</span>
+          <span style={{ color: '#34d399' }}>Free X-Ray Audit →</span>
         </div>
       </div>
     ),
