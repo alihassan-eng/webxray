@@ -25,6 +25,7 @@ export default function OpenGraphImage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div
             style={{
+              display: 'flex',
               height: '20px',
               width: '20px',
               borderRadius: '9999px',
@@ -36,6 +37,7 @@ export default function OpenGraphImage() {
           </span>
           <span
             style={{
+              display: 'flex',
               marginLeft: '16px',
               borderRadius: '9999px',
               border: '1px solid rgba(52, 211, 153, 0.4)',
@@ -50,11 +52,10 @@ export default function OpenGraphImage() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '940px' }}>
-          <div style={{ fontSize: '62px', fontWeight: 800, lineHeight: 1.1 }}>
-            Find out why visitors are{' '}
-            <span style={{ color: '#34d399' }}>leaving your website</span> in 30 seconds.
+          <div style={{ display: 'flex', flexWrap: 'wrap', fontSize: '60px', fontWeight: 800, lineHeight: 1.12 }}>
+            Find out why visitors are leaving your website in 30 seconds.
           </div>
-          <div style={{ fontSize: '26px', color: '#94a3b8', lineHeight: 1.4 }}>
+          <div style={{ display: 'flex', fontSize: '26px', color: '#94a3b8', lineHeight: 1.4 }}>
             Real iPhone 14 Viewport • Speed &amp; TTFB • Security Headers • Copy-Paste Code Fixes
           </div>
         </div>
