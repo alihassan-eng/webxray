@@ -1,5 +1,6 @@
 'use client';
 
+import { UnlockReportButton } from '@/components/UnlockReportButton';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { LiveScanProgress } from '../../../components/LiveScanProgress';
@@ -133,13 +134,12 @@ export default function ReportPage() {
                   className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4 text-center"
                 >
                   <div
-                    className={`text-3xl font-extrabold ${
-                      s.value >= 80
+                    className={`text-3xl font-extrabold ${s.value >= 80
                         ? 'text-emerald-400'
                         : s.value >= 55
                           ? 'text-amber-400'
                           : 'text-rose-400'
-                    }`}
+                      }`}
                   >
                     {s.value}
                   </div>
@@ -181,11 +181,10 @@ export default function ReportPage() {
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <span
-                    className={`rounded-md px-2.5 py-0.5 text-xs font-bold ${
-                      issue.severity === 'CRITICAL'
+                    className={`rounded-md px-2.5 py-0.5 text-xs font-bold ${issue.severity === 'CRITICAL'
                         ? 'bg-rose-500/20 text-rose-300'
                         : 'bg-amber-500/20 text-amber-300'
-                    }`}
+                      }`}
                   >
                     {issue.severity}
                   </span>
@@ -229,11 +228,10 @@ export default function ReportPage() {
                 </span>
                 <h3 className="mt-2 text-xl font-bold">
                   {data.lockedIssuesCount > 0
-                    ? `Unlock ${
-                        data.lockedIssuesCount === 1
-                          ? '1 More Issue'
-                          : `${data.lockedIssuesCount} More Issues`
-                      } + All Code Fixes`
+                    ? `Unlock ${data.lockedIssuesCount === 1
+                      ? '1 More Issue'
+                      : `${data.lockedIssuesCount} More Issues`
+                    } + All Code Fixes`
                     : 'Unlock All Copy-Paste Code Fixes'}
                 </h3>
                 <p className="mt-2 text-sm text-slate-300">
@@ -241,26 +239,10 @@ export default function ReportPage() {
                   copy-paste code tailored to your tech stack.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  const baseCheckoutUrl =
-                    process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL;
-                  if (baseCheckoutUrl) {
-                    window.open(
-                      `${baseCheckoutUrl}?checkout[custom][audit_id]=${data.id}`,
-                      '_self',
-                    );
-                  } else {
-                    alert(
-                      'Add NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL in Vercel to open live $29 checkout!',
-                    );
-                  }
-                }}
-                className="mt-6 w-full cursor-pointer rounded-xl bg-amber-400 py-3.5 text-sm font-bold text-slate-950 transition hover:bg-amber-300 active:scale-[0.98]"
-              >
-                Unlock Full Report — $29
-              </button>
+              <div className="mt-6">
+                <UnlockReportButton auditId={data.id} lockedCount={data.lockedIssuesCount} />
+              </div>
+
             </div>
             <DoneForYouCard auditId={data.id} targetUrl={data.targetUrl} />
           </div>
