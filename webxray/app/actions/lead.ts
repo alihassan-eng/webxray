@@ -33,7 +33,7 @@ export async function submitFixLead(formData: FormData) {
           <h2>New Done-For-You Engineering Request!</h2>
           <p><strong>Client Email:</strong> ${email}</p>
           <p><strong>Target Website:</strong> ${targetUrl}</p>
-          <p><strong>Report Link:</strong> <a href="https://vercel.app{auditId}">View Full X-Ray Report</a></p>
+          <p><strong>Report Link:</strong> <a href="https://webxray-virid.vercel.app/report/${auditId}">View Full X-Ray Report</a></p>
         `,
       });
 
