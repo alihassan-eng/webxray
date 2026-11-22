@@ -1,4 +1,3 @@
-// lib/ai-analyzer.ts
 import { generateText, Output } from 'ai';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
@@ -20,7 +19,7 @@ const AuditReportSchema = z.object({
         technicalFix: z.string(),
       })
     )
-    .min(3)
+    .min(1)
     .max(12),
 });
 
@@ -42,14 +41,13 @@ Analyze the following mobile telemetry data collected from an iPhone 14 viewport
 ${JSON.stringify(cleanTelemetry, null, 2)}
 
 Rules:
-1. Calculate realistic, well-calibrated scores (0-100) grounded in the telemetry above:
-   - Security: Start at 100 if HTTPS is active. Deduct 10 pts if HSTS is missing, and 5-8 pts each for missing CSP, X-Frame-Options, or X-Content-Type-Options (do NOT drop below 70 on an HTTPS site unless active mixed-content or severe vulnerabilities exist).
+1. Calculate realistic, well-calibrated scores (0-100) grounded strictly in the telemetry above:
+   - Security: Start at 100 if HTTPS is active. Deduct 10 pts if strictTransportSecurity is false, and 5-8 pts each if contentSecurityPolicy or xFrameOptions is false. If HTTPS, HSTS, CSP, and X-Frame-Options are all true, Security MUST be 100.
    - Performance: Start at 100. Deduct points proportionally only if TTFB > 600ms, loadEventMs > 3500ms, totalRequests > 90, or largeImages (>500KB) exist.
-   - SEO & UI: Deduct 10-15 pts for missing meta description, missing og:image, missing H1, horizontal mobile overflow, or images missing alt text.
-2. Identify every real issue found. If a site is clean, include high-value frontend optimization opportunities so 4-8 concrete items are returned.
-3. Write "businessImpact" in plain, persuasive business English explaining how this issue costs the owner customers, trust, or Google rankings.
-4. Write "technicalFix" as clean, copy-pasteable production code tailored to detectedStack.
-5. Always reference the real URLs from missingAltImageUrls, largeImages, or failedNetworkRequests—never use placeholder names like example.jpg.`;
+   - SEO & UI: Start at 100. Deduct 10-15 pts only if hasMetaDescription is false, hasOgImage is false, hasH1 is false, hasHorizontalOverflow is true, or imagesMissingAlt > 0.
+2. Only report real issues found in the telemetry. If a site passes all checks cleanly, return 1-2 proactive growth/conversion optimization tips (never invent missing security headers that are already true).
+3. Write "businessImpact" in plain, persuasive business English.
+4. Write "technicalFix" as clean, copy-pasteable production code tailored to detectedStack.`;
 
   for (const modelId of FALLBACK_MODELS) {
     try {
@@ -67,7 +65,6 @@ Rules:
     }
   }
 
-  // Instant telemetry-backed fallback if free AI quota is temporarily rate-limited
   return buildFallbackReport(telemetry);
 }
 
@@ -82,7 +79,19 @@ function buildFallbackReport(t: XrayTelemetry): AiAuditReport {
       title: 'Missing Content-Security-Policy & Clickjacking Headers',
       businessImpact:
         'Without CSP and X-Frame-Options headers, browsers cannot block unauthorized script injection or iframe embedding, lowering enterprise buyer trust.',
-      technicalFix: `// next.config.ts\nconst headers = [\n  { key: 'X-Frame-Options', value: 'DENY' },\n  { key: 'X-Content-Type-Options', value: 'nosniff' },\n];`,
+      technicalFix: `// next.config.ts\nconst headers = [\n  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },\n  { key: 'X-Content-Type-Options', value: 'nosniff' },\n];`,
+    });
+  }
+
+  if (!t.securityHeaders.strictTransportSecurity) {
+    issues.push({
+      id: 'sec-hsts',
+      category: 'SECURITY',
+      severity: 'WARNING',
+      title: 'Enforce Strict-Transport-Security (HSTS) Preload',
+      businessImpact:
+        'Explicit HSTS headers prevent protocol downgrade attacks on public Wi-Fi networks.',
+      technicalFix: `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`,
     });
   }
 
@@ -94,7 +103,7 @@ function buildFallbackReport(t: XrayTelemetry): AiAuditReport {
       title: `Slow Mobile Load (${(t.timing.loadEventMs / 1000).toFixed(1)}s across ${t.timing.totalRequests} requests)`,
       businessImpact:
         'Mobile visitors abandon pages taking longer than 2.5 seconds to finish loading, directly reducing demo bookings and conversions.',
-      technicalFix: `// Defer non-critical third-party scripts in Next.js\nimport Script from 'next/script';\n<Script src="https://example.com" strategy="lazyOnload" />`,
+      technicalFix: `import Script from 'next/script';\n<Script src="https://example.com" strategy="lazyOnload" />`,
     });
   }
 
@@ -118,38 +127,39 @@ function buildFallbackReport(t: XrayTelemetry): AiAuditReport {
       title: `${t.domAndSeo.imagesMissingAlt} Image(s) Missing Descriptive Alt Attributes`,
       businessImpact:
         'Missing alt text hurts Google Image indexing and breaks screen-reader accessibility for mobile users.',
-      technicalFix: `<img src="${t.domAndSeo.missingAltImageUrls[0] || '/hero.png'}" alt="Product dashboard preview" loading="lazy" />`,
+      technicalFix: `<img src="${t.domAndSeo.missingAltImageUrls || '/hero.png'}" alt="Product preview" loading="lazy" />`,
     });
   }
 
-  if (issues.length < 3) {
-    issues.push(
-      {
-        id: 'perf-cache',
-        category: 'PERFORMANCE',
-        severity: 'WARNING',
-        title: 'Optimize Edge Caching & Asset Compression',
-        businessImpact:
-          'Unoptimized static asset cache headers increase repeat-visit latency on 4G mobile connections.',
-        technicalFix: `Cache-Control: public, max-age=31536000, immutable`,
-      },
-      {
-        id: 'sec-hsts',
-        category: 'SECURITY',
-        severity: 'WARNING',
-        title: 'Enforce Strict-Transport-Security (HSTS) Preload',
-        businessImpact:
-          'Explicit HSTS headers prevent protocol downgrade attacks on public Wi-Fi networks.',
-        technicalFix: `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`,
-      }
-    );
+  if (issues.length === 0) {
+    issues.push({
+      id: 'cro-edge-prerender',
+      category: 'PERFORMANCE',
+      severity: 'WARNING',
+      title: 'Add Speculative Prefetching for Instant Sub-Page Transitions',
+      businessImpact:
+        'Pre-warming high-intent conversion routes reduces mobile navigation latency to near-zero on 4G connections.',
+      technicalFix: `<Link href="/contact" prefetch={true}>Book Engineering Fix</Link>`,
+    });
   }
 
   const securityScore = t.finalUrl.startsWith('https://')
-    ? 78 + (t.securityHeaders.strictTransportSecurity ? 8 : 0) + (t.securityHeaders.contentSecurityPolicy ? 8 : 0)
+    ? Math.min(
+        100,
+        84 +
+          (t.securityHeaders.strictTransportSecurity ? 6 : 0) +
+          (t.securityHeaders.contentSecurityPolicy ? 6 : 0) +
+          (t.securityHeaders.xFrameOptions ? 4 : 0)
+      )
     : 45;
-  const performanceScore = Math.max(55, Math.min(96, Math.round(100 - t.timing.loadEventMs / 120)));
-  const seoScore = Math.max(60, 100 - (t.domAndSeo.hasMetaDescription ? 0 : 12) - (t.domAndSeo.hasOgImage ? 0 : 10) - Math.min(15, t.domAndSeo.imagesMissingAlt * 3));
+  const performanceScore = Math.max(65, Math.min(99, Math.round(100 - t.timing.loadEventMs / 150)));
+  const seoScore = Math.max(
+    60,
+    100 -
+      (t.domAndSeo.hasMetaDescription ? 0 : 12) -
+      (t.domAndSeo.hasOgImage ? 0 : 10) -
+      Math.min(15, t.domAndSeo.imagesMissingAlt * 3)
+  );
   const overallScore = Math.round((securityScore + performanceScore + seoScore) / 3);
 
   return {
