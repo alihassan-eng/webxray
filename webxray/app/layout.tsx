@@ -1,9 +1,15 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 
 const SITE_URL = 'https://webxray-virid.vercel.app/';
+
+export const viewport: Viewport = {
+  themeColor: '#020617',
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -12,14 +18,13 @@ export const metadata: Metadata = {
     template: '%s | WebXray',
   },
   description:
-    'Audit any website in 30 seconds inside a real iPhone 14 mobile viewport. Detect speed bottlenecks, security header gaps, mobile layout bugs, and SEO issues with copy-paste code fixes.',
+    'Audit any website in 30 seconds inside an iPhone 14 viewport. Fix speed bottlenecks, security headers, mobile layout bugs, and SEO with copy-paste code.',
   keywords: [
     'website audit',
     'mobile performance test',
     'security headers checker',
     'Core Web Vitals',
     'SEO diagnostic tool',
-    'Next.js optimization',
     'WebXray',
   ],
   authors: [{ name: 'WebXray Engineering' }],
@@ -29,13 +34,13 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: SITE_URL,
     siteName: 'WebXray',
-    title: 'WebXray — Find Out Why Visitors Are Leaving Your Website in 30s',
+    title: 'WebXray — 30s Mobile Website & Code Diagnostics',
     description:
       'Live iPhone 14 mobile browser diagnostics for speed, security headers, layout bugs, and SEO—with exact copy-paste code fixes.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WebXray — 30-Second Mobile Website & Code Diagnostics',
+    title: 'WebXray — 30s Mobile Website & Code Diagnostics',
     description:
       'Scan any URL in a real mobile viewport. Get instant speed, security, and SEO diagnostics with production code fixes.',
   },
@@ -50,8 +55,30 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'WebXray',
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Web',
+    url: SITE_URL,
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+  };
+
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://browserless.io" />
+        <link rel="dns-prefetch" href="https://browserless.io" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="flex min-h-screen flex-col bg-slate-950 pt-16 text-slate-50 antialiased">
         <Navbar />
         <div className="flex-1">{children}</div>
