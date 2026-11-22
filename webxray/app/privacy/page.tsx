@@ -12,7 +12,7 @@ export default function PrivacyPage() {
         <h2 className="text-lg font-semibold text-white">3. Payment Security</h2>
         <p>We do not store credit card numbers. All financial transactions are encrypted and handled by Paddle.</p>
         <h2 className="text-lg font-semibold text-white">4. Contact</h2>
-        <p>Privacy inquiries may be sent to <span className="text-emerald-400">support@webxray.app</span>.</p>
+        <p>Privacy inquiries may be sent to <span className="text-emerald-400">core.infrastructure.lab@gmail.com</span>.</p>
       </div>
     </main>
   );
