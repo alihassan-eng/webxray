@@ -1,6 +1,6 @@
 # WebXray — 30-Second Mobile Website & Code Diagnostics
 
-**Live Production App:** [https://vercel.app](https://vercel.app)
+**Live Production App:** [https://webxray-virid.vercel.app/](https://webxray-virid.vercel.app/)
 
 WebXray is a full-stack B2B SaaS diagnostic engine that inspects any live website inside a real **iPhone 14 mobile viewport (`390×844`)** in under 30 seconds. It identifies mobile layout bugs, server TTFB bottlenecks, missing security headers, and SEO gaps—delivering both copy-paste production code fixes (`$29`) and done-for-you engineering remediation (`$499+`).
 
@@ -29,7 +29,8 @@ WebXray is a full-stack B2B SaaS diagnostic engine that inspects any live websit
 
 ## Author
 
-**Ali Hassan** — Full-Stack Product Engineer  
-- **Live Product:** [https://vercel.app](https://vercel.app)  
-- **LinkedIn:** [https://linkedin.com](https://linkedin.com)  
-- **X (Twitter):** [@alihassan_eng](https://x.com) | [@WebXrayApp](https://x.com)
+**Ali Hassan** — Full-Stack Product Engineer
+
+- **Live Product:** [https://webxray-virid.vercel.app/](https://webxray-virid.vercel.app/)
+- **LinkedIn:** [https://www.linkedin.com/in/alihassan-eng/](https://www.linkedin.com/in/alihassan-eng/)
+- **X (Twitter):** [@alihassan_eng](https://x.com/alihassan_eng) | [@WebXrayApp](https://x.com/WebXrayApp)
