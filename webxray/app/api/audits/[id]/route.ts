@@ -28,9 +28,17 @@ export async function GET(
     .select({
       id: audits.id,
       targetUrl: audits.targetUrl,
+      isUnlocked: audits.isUnlocked,
       createdAt: audits.createdAt,
     })
     .from(audits);
+
+  const hasPaidForDomain = allAudits.some(
+    (item) =>
+      normalizeDomain(item.targetUrl) === currentDomain && item.isUnlocked
+  );
+
+  const effectiveUnlocked = audit.isUnlocked || hasPaidForDomain;
 
   const isRepeatScan = allAudits.some(
     (item) =>
@@ -44,7 +52,7 @@ export async function GET(
   const allIssues = audit.issues ?? [];
   const totalIssuesCount = allIssues.length;
 
-  const visibleIssues = audit.isUnlocked
+  const visibleIssues = effectiveUnlocked
     ? allIssues
     : allIssues.slice(0, freePreviewLimit).map((issue) => ({
         ...issue,
@@ -61,9 +69,9 @@ export async function GET(
     securityScore: audit.securityScore,
     seoScore: audit.seoScore,
     screenshotUrl: audit.screenshotUrl,
-    isUnlocked: audit.isUnlocked,
+    isUnlocked: effectiveUnlocked,
     totalIssuesCount,
-    lockedIssuesCount: audit.isUnlocked
+    lockedIssuesCount: effectiveUnlocked
       ? 0
       : Math.max(0, totalIssuesCount - freePreviewLimit),
     issues: visibleIssues,
