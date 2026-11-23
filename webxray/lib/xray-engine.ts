@@ -133,7 +133,7 @@ export async function runXrayScan(rawUrl: string): Promise<XrayTelemetry> {
     });
 
     const mainResponse = await page.goto(targetUrl, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: 30000,
     });
 
