@@ -1,15 +1,15 @@
-import { NextResponse } from 'next/server';
-import { db, getAuditRecord } from '@/db';
-import { audits } from '@/db/schema';
+import { NextResponse } from "next/server";
+import { db, getAuditRecord } from "@/db";
+import { audits } from "@/db/schema";
 
 function normalizeDomain(rawUrl: string): string {
-  return rawUrl
+  const clean = rawUrl
     .trim()
     .toLowerCase()
-    .replace(/^https?:\/\//, '')
-    .replace(/^www\./, '')
-    .split('/')[0]
-    .split('?')[0];
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "");
+  const host = clean.split("/").at(0) ?? clean;
+  return host.split("?").at(0) ?? host;
 }
 
 export async function GET(
@@ -17,14 +17,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-
   const audit = await getAuditRecord(id);
 
   if (!audit) {
-    return NextResponse.json({ error: 'Audit not found' }, { status: 404 });
+    return NextResponse.json({ error: "Audit not found" }, { status: 404 });
   }
 
-  // چیک کریں کہ آیا یہ ویب سائٹ پہلے بھی اسکین ہو چکی ہے
   const currentDomain = normalizeDomain(audit.targetUrl);
   const allAudits = await db
     .select({
@@ -41,7 +39,6 @@ export async function GET(
       new Date(item.createdAt).getTime() < new Date(audit.createdAt).getTime()
   );
 
-  // پہلی بار صرف 2 مسائل مفت، دوبارہ اسی سائٹ کے اسکین پر 0 مسائل مفت
   const freePreviewLimit = isRepeatScan ? 0 : 2;
 
   const allIssues = audit.issues ?? [];
