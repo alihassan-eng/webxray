@@ -35,7 +35,7 @@ export async function GET(
 
   const hasPaidForDomain = allAudits.some(
     (item) =>
-      normalizeDomain(item.targetUrl) === currentDomain && item.isUnlocked
+      normalizeDomain(item.targetUrl) === currentDomain && item.isUnlocked && (Date.now() - new Date(item.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000)
   );
 
   const effectiveUnlocked = audit.isUnlocked || hasPaidForDomain;
