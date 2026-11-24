@@ -66,7 +66,7 @@ export default function ReportPage() {
   if (!data || data.status === 'PENDING' || data.status === 'SCANNING') {
     return (
       <LiveScanProgress
-        targetUrl={data?.targetUrl}
+        targetUrl=<span className="break-all">{data?.targetUrl}</span>
         status={data?.status === 'SCANNING' ? 'SCANNING' : 'PENDING'}
       />
     );
@@ -124,7 +124,7 @@ export default function ReportPage() {
               WebXray Diagnostic Report
             </p>
             <h1 className="mt-2 truncate text-xl font-bold sm:text-3xl">
-              {data.targetUrl}
+              <span className="break-all">{data.targetUrl}</span>
             </h1>
 
             <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:grid-cols-4 sm:gap-4">
@@ -244,7 +244,7 @@ export default function ReportPage() {
               </div>
 
             </div>
-            <DoneForYouCard auditId={data.id} targetUrl={data.targetUrl} />
+            <DoneForYouCard auditId={data.id} targetUrl=<span className="break-all">{data.targetUrl}</span> />
           </div>
         )}
       </div>
