@@ -45,9 +45,15 @@ Rules:
    - Security: Start at 100 if HTTPS is active. Deduct 10 pts if strictTransportSecurity is false, and 5-8 pts each if contentSecurityPolicy or xFrameOptions is false. If HTTPS, HSTS, CSP, and X-Frame-Options are all true, Security MUST be 100.
    - Performance: Start at 100. Deduct points proportionally only if TTFB > 600ms, loadEventMs > 3500ms, totalRequests > 90, or largeImages (>500KB) exist.
    - SEO & UI: Start at 100. Deduct 10-15 pts only if hasMetaDescription is false, hasOgImage is false, hasH1 is false, hasHorizontalOverflow is true, or imagesMissingAlt > 0.
-2. Only report real issues found in the telemetry. If a site passes all checks cleanly, return 1-2 proactive growth/conversion optimization tips (never invent missing security headers that are already true).
-3. Write "businessImpact" in plain, persuasive business English.
-4. Write "technicalFix" as clean, copy-pasteable production code tailored to detectedStack.`;
+2. Only report real issues found in the telemetry. Never invent fake issues—if all checks pass, return an empty issues array [].
+3. Write "businessImpact" in plain, persuasive business English, naming the exact missing tag(s) or header(s).
+4. CRITICAL STACK-MATCHING RULE for "technicalFix":
+   - Inspect "detectedStack" carefully and always state the exact missing tag(s) or header(s) at the top.
+   - If detectedStack indicates "Next.js", provide Next.js (next.config.ts / metadata) code including full CSP & X-Frame-Options.
+   - If detectedStack indicates plain "HTML" / "Static" / no JS framework, NEVER output Next.js code! Clearly separate:
+     (1) What can be fixed directly in plain HTML (<head> tags like <meta http-equiv="Content-Security-Policy"> or <meta name="description"> / <meta property="og:image">), AND
+     (2) What cannot be fixed in HTML alone and requires hosting/HTTP response header control (e.g., X-Frame-Options / frame-ancestors via Cloudflare free proxy, _headers, .htaccess, or nginx).
+   - Show ONLY the exact missing snippet/tags needed for this specific site.`;
 
   for (const modelId of FALLBACK_MODELS) {
     try {
@@ -70,52 +76,101 @@ Rules:
 
 function buildFallbackReport(t: XrayTelemetry): AiAuditReport {
   const issues: AiAuditReport['issues'] = [];
+  const stackLabel = Array.isArray(t.detectedStack) ? (t.detectedStack.join(", ") || 'Static HTML') : (t.detectedStack || 'Static HTML');
+  const isNextJs = /next\.?js/i.test(stackLabel);
+  const isWordPress = /wordpress/i.test(stackLabel);
 
-  if (!t.securityHeaders.contentSecurityPolicy || !t.securityHeaders.xFrameOptions) {
+  const missingCsp = !t.securityHeaders.contentSecurityPolicy;
+  const missingXFrame = !t.securityHeaders.xFrameOptions;
+
+  if (missingCsp || missingXFrame) {
+    const missingList = [
+      missingCsp ? 'Content-Security-Policy' : null,
+      missingXFrame ? 'X-Frame-Options' : null,
+    ]
+      .filter(Boolean)
+      .join(' & ');
+
+    let fixCode = [
+      `<!-- Detected Stack: ${stackLabel} -->`,
+      `<!-- Exact Missing HTTP Header(s): ${missingList} -->`,
+      missingCsp
+        ? `<!-- 1. Fixable directly in plain HTML (<head>): -->\n<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:;" />`
+        : null,
+      missingXFrame
+        ? `<!-- 2. Requires Hosting / HTTP Response Header Control (X-Frame-Options cannot be set in HTML <meta> on static hosts like GitHub Pages; use Cloudflare free proxy, _headers, or .htaccess): -->\n# Hosting / Server HTTP Response Headers:\n${missingCsp ? "Content-Security-Policy: default-src 'self' https:; img-src 'self' data: https:; frame-ancestors 'self';\n" : ''}X-Frame-Options: SAMEORIGIN\nX-Content-Type-Options: nosniff`
+        : null,
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+
+    if (isNextJs) {
+      fixCode = `// Detected Stack: ${stackLabel} (next.config.ts)\n// Exact Missing HTTP Header(s): ${missingList}\nconst securityHeaders = [\n  ${missingCsp ? `{ key: 'Content-Security-Policy', value: "default-src 'self' https:; img-src 'self' data: https:; frame-ancestors 'self';" },\n  ` : ''}${missingXFrame ? `{ key: 'X-Frame-Options', value: 'SAMEORIGIN' },\n  ` : ''}{ key: 'X-Content-Type-Options', value: 'nosniff' },\n];`;
+    } else if (isWordPress) {
+      fixCode = `# Detected Stack: ${stackLabel} (.htaccess)\n// Exact Missing HTTP Header(s): ${missingList}\n<IfModule mod_headers.c>\n  ${missingCsp ? 'Header set Content-Security-Policy "default-src \'self\' https:; frame-ancestors \'self\';"\n  ' : ''}${missingXFrame ? 'Header set X-Frame-Options "SAMEORIGIN"\n  ' : ''}Header set X-Content-Type-Options "nosniff"\n</IfModule>`;
+    }
+
     issues.push({
       id: 'sec-headers',
       category: 'SECURITY',
       severity: 'WARNING',
-      title: 'Missing Content-Security-Policy & Clickjacking Headers',
-      businessImpact:
-        'Without CSP and X-Frame-Options headers, browsers cannot block unauthorized script injection or iframe embedding, lowering enterprise buyer trust.',
-      technicalFix: `// next.config.ts\nconst headers = [\n  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },\n  { key: 'X-Content-Type-Options', value: 'nosniff' },\n];`,
+      title: `Missing ${missingList} Header(s) [${stackLabel}]`,
+      businessImpact: `HTTP response is missing ${missingList}, so browsers cannot block unauthorized script injection or iframe clickjacking, lowering buyer trust.`,
+      technicalFix: fixCode,
     });
   }
 
   if (!t.securityHeaders.strictTransportSecurity) {
+    const hstsFix = isNextJs
+      ? `// Detected Stack: ${stackLabel} (next.config.ts)\n// Missing Header: Strict-Transport-Security\n{ key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' }`
+      : `# Detected Stack: ${stackLabel} (Requires Hosting / Server HTTP Header Control)\n# Missing Header: Strict-Transport-Security\nStrict-Transport-Security: max-age=63072000; includeSubDomains; preload`;
+
     issues.push({
       id: 'sec-hsts',
       category: 'SECURITY',
       severity: 'WARNING',
-      title: 'Enforce Strict-Transport-Security (HSTS) Preload',
+      title: `Missing Strict-Transport-Security (HSTS) Header [${stackLabel}]`,
       businessImpact:
-        'Explicit HSTS headers prevent protocol downgrade attacks on public Wi-Fi networks.',
-      technicalFix: `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`,
+        'Explicit HSTS headers prevent protocol downgrade attacks when visitors open your site on public Wi-Fi networks.',
+      technicalFix: hstsFix,
     });
   }
 
   if (t.timing.loadEventMs > 2500 || t.timing.totalRequests > 60) {
+    const perfFix = isNextJs
+      ? `// Detected Stack: ${stackLabel}\nimport Script from 'next/script';\n<Script src="https://example.com" strategy="lazyOnload" />`
+      : `<!-- Detected Stack: ${stackLabel} (Fixable directly in HTML) -->\n<!-- Defer non-critical scripts so mobile rendering is not blocked -->\n<script src="/assets/analytics.js" defer></script>\n<img src="/assets/hero.webp" alt="Hero preview" loading="lazy" decoding="async" />`;
+
     issues.push({
       id: 'perf-load',
       category: 'PERFORMANCE',
       severity: 'CRITICAL',
       title: `Slow Mobile Load (${(t.timing.loadEventMs / 1000).toFixed(1)}s across ${t.timing.totalRequests} requests)`,
       businessImpact:
-        'Mobile visitors abandon pages taking longer than 2.5 seconds to finish loading, directly reducing demo bookings and conversions.',
-      technicalFix: `import Script from 'next/script';\n<Script src="https://example.com" strategy="lazyOnload" />`,
+        'Mobile visitors abandon pages taking longer than 2.5 seconds to finish loading, directly reducing conversions.',
+      technicalFix: perfFix,
     });
   }
 
   if (!t.domAndSeo.hasMetaDescription || !t.domAndSeo.hasOgImage) {
+    const missingSeo = [
+      !t.domAndSeo.hasMetaDescription ? '<meta name="description">' : null,
+      !t.domAndSeo.hasOgImage ? '<meta property="og:image">' : null,
+    ]
+      .filter(Boolean)
+      .join(' and ');
+
+    const seoFix = isNextJs
+      ? `// Detected Stack: ${stackLabel} (app/layout.tsx)\n// Exact Missing Tag(s): ${missingSeo}\nexport const metadata = {\n  description: 'Clear value proposition under 155 characters.',\n  openGraph: { images: ['/og-preview.png'] },\n};`
+      : `<!-- Detected Stack: ${stackLabel} (Fixable directly inside HTML <head>) -->\n<!-- Exact Missing Tag(s): ${missingSeo} -->\n${!t.domAndSeo.hasMetaDescription ? '<meta name="description" content="Clear summary of your website under 155 characters." />\n' : ''}${!t.domAndSeo.hasOgImage ? `<meta property="og:image" content="${t.finalUrl.replace(/\/$/, '')}/og-preview.png" />` : ''}`;
+
     issues.push({
       id: 'seo-meta',
       category: 'SEO',
       severity: 'WARNING',
-      title: 'Incomplete Search & Social Preview Metadata',
-      businessImpact:
-        'Missing meta descriptions or OpenGraph preview images reduce click-through rates when links are shared on LinkedIn, X, or Google Search.',
-      technicalFix: `export const metadata = {\n  description: 'Clear value proposition under 155 characters.',\n  openGraph: { images: ['/og-preview.png'] },\n};`,
+      title: `Missing ${missingSeo} Tag(s) [${stackLabel}]`,
+      businessImpact: `HTML <head> is missing ${missingSeo}, reducing click-through rates when links are shared on LinkedIn, X, or Google Search.`,
+      technicalFix: seoFix,
     });
   }
 
@@ -127,11 +182,9 @@ function buildFallbackReport(t: XrayTelemetry): AiAuditReport {
       title: `${t.domAndSeo.imagesMissingAlt} Image(s) Missing Descriptive Alt Attributes`,
       businessImpact:
         'Missing alt text hurts Google Image indexing and breaks screen-reader accessibility for mobile users.',
-      technicalFix: `<img src="${t.domAndSeo.missingAltImageUrls || '/hero.png'}" alt="Product preview" loading="lazy" />`,
+      technicalFix: `<!-- Detected Stack: ${stackLabel} (Fixable directly in HTML) -->\n<img src="${t.domAndSeo.missingAltImageUrls || '/hero.png'}" alt="Descriptive image summary" loading="lazy" />`,
     });
   }
-
-
 
   const securityScore = t.finalUrl.startsWith('https://')
     ? Math.min(
