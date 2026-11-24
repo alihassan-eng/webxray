@@ -212,8 +212,8 @@ export default function ReportPage() {
               : "border-amber-500/40 bg-amber-500/10"
           }`}
         >
-          <div className="flex items-center gap-3.5">
-            <span
+          <div style={{ gap: "18px" }} className="flex items-center">
+            <span style={{ marginRight: "18px" }}
               className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg ${
                 totalIssuesCount === 0 ? "bg-emerald-500/20" : "bg-amber-500/20"
               }`}
@@ -226,7 +226,7 @@ export default function ReportPage() {
                   ? "0 Mobile Issues Found — Looking Great!"
                   : `${totalIssuesCount} Mobile & Security ${totalIssuesCount === 1 ? "Issue" : "Issues"} Found`}
               </p>
-              <p className="text-xs text-slate-300">
+              <p style={{ marginTop: "4px" }} className="text-xs text-slate-300">
                 {totalIssuesCount > 0
                   ? "Review the business impact below, then unlock the exact code fixes."
                   : "Your website passed all core mobile speed, security, and trust checks."}
