@@ -75,7 +75,7 @@ export default function ReportPage() {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-6 text-center text-white">
         <div className="max-w-lg rounded-2xl border border-rose-500/30 bg-rose-500/10 p-8">
-          <h1 className="text-lg sm:text-lg sm:text-3xl font-bold text-rose-400 break-all break-all max-w-full">
+          <h1 className="sm: sm: font-bold text-rose-400 break-all break-all max-w-full text-base sm:text-2xl break-all leading-snug">
             Scan Could Not Complete
           </h1>
           <p className="mt-2 text-sm text-slate-300">
@@ -118,8 +118,8 @@ export default function ReportPage() {
         </div>
 
         {/* Header + Screenshot */}
-        <div className="grid gap-8 rounded-3xl border border-slate-800 bg-slate-900/70 p-5 sm:p-8 lg:grid-cols-3">
-          <div className="lg:col-span-2">
+        <div className="grid gap-8 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/70 p-5 sm:p-8 lg:grid-cols-3">
+          <div className="min-w-0 lg:col-span-2">
             <p className="text-xs font-semibold tracking-wider text-emerald-400 uppercase">
               WebXray Diagnostic Report
             </p>
@@ -221,7 +221,7 @@ export default function ReportPage() {
         {/* Dual Monetization Conversion Box */}
         {!data.isUnlocked && (
           <div className="mt-10 grid gap-6 sm:mt-12 md:grid-cols-2">
-            <div className="flex flex-col justify-between rounded-3xl border border-amber-500/40 bg-gradient-to-b from-amber-500/10 to-slate-900 p-6 sm:p-8">
+            <div className="flex flex-col justify-between overflow-hidden rounded-3xl border border-amber-500/40 bg-gradient-to-b from-amber-500/10 to-slate-900 p-6 sm:p-8">
               <div>
                 <span className="text-xs font-bold tracking-wider text-amber-400 uppercase">
                   🔓 For Developers &amp; Teams
