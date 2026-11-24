@@ -75,7 +75,7 @@ export default function ReportPage() {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-6 text-center text-white">
         <div className="max-w-lg rounded-2xl border border-rose-500/30 bg-rose-500/10 p-8">
-          <h1 className="text-2xl font-bold text-rose-400 break-all">
+          <h1 className="text-lg sm:text-lg sm:text-3xl font-bold text-rose-400 break-all break-all max-w-full">
             Scan Could Not Complete
           </h1>
           <p className="mt-2 text-sm text-slate-300">
@@ -123,7 +123,7 @@ export default function ReportPage() {
             <p className="text-xs font-semibold tracking-wider text-emerald-400 uppercase">
               WebXray Diagnostic Report
             </p>
-            <h1 className="mt-2 truncate text-xl font-bold sm:text-3xl">
+            <h1 className="mt-2 truncate text-xl font-bold sm:text-lg sm:text-3xl break-all max-w-full">
               {data.targetUrl}
             </h1>
 
