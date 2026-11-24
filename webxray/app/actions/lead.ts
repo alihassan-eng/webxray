@@ -33,7 +33,9 @@ export async function submitFixLead(formData: FormData) {
           <h2>New Done-For-You Engineering Request!</h2>
           <p><strong>Client Email:</strong> ${email}</p>
           <p><strong>Target Website:</strong> ${targetUrl}</p>
-          <p><strong>Report Link:</strong> <a href="https://webxray-virid.vercel.app/report/${auditId}">View Full X-Ray Report</a></p>
+          <p><strong>Audit ID:</strong> <code>${auditId}</code></p>
+        <p><strong>Report URL:</strong> <a href="https://webxray-virid.vercel.app/report/${auditId}">https://webxray-virid.vercel.app/report/${auditId}</a></p>
+        <p><strong>Neon Unlock SQL:</strong><br/><code>UPDATE audits SET is_unlocked = true WHERE id = '${auditId}';</code></p>
         `,
       });
 
