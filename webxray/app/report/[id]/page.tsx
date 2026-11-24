@@ -33,6 +33,7 @@ interface ReportResponse {
 export default function ReportPage() {
   const params = useParams<{ id: string }>();
   const [data, setData] = useState<ReportResponse | null>(null);
+  const [showMorePlans, setShowMorePlans] = useState(false);
 
   useEffect(() => {
     if (!params?.id) return;
@@ -43,7 +44,7 @@ export default function ReportPage() {
         const res = await fetch(`/api/audits/${params.id}`, {
           cache: 'no-store',
         });
-        if (!res.ok) return;
+        if (!res.ok) { if (active) setTimeout(poll, 3000); return; }
         const json: ReportResponse = await res.json();
         if (!active) return;
         setData(json);
@@ -202,7 +203,56 @@ export default function ReportPage() {
           )}
         </div>
 
+        {/* Top Issues Found Alert Banner */}
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-amber-500/35 bg-amber-500/10 px-6 py-4">
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-base text-amber-300">
+              ⚠️
+            </span>
+            <div>
+              <p className="text-sm font-extrabold text-white sm:text-base">
+                {totalIssuesCount === 0
+                  ? "0 Mobile Issues Found"
+                  : `${totalIssuesCount} Mobile & Security ${totalIssuesCount === 1 ? "Issue" : "Issues"} Found`}
+              </p>
+              <p className="text-xs text-slate-300">
+                {totalIssuesCount > 0
+                  ? "Review the business impact below, then unlock the exact code fixes."
+                  : "Your site passed all mobile diagnostic checks."}
+              </p>
+            </div>
+          </div>
+          {!data.isUnlocked && totalIssuesCount > 0 && (
+            <span className="rounded-full border border-amber-400/40 bg-slate-950/70 px-3.5 py-1.5 text-xs font-bold text-amber-300">
+              🔒 {totalIssuesCount} {totalIssuesCount === 1 ? "Issue" : "Issues"} Locked Below
+            </span>
+          )}
+        </div>
+
         {/* Business Owner Profit & Loss Summary (Zero Engineering Jargon) */}
+        <div style={{ marginTop: "28px", padding: "18px 24px" }} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-amber-500/40 bg-amber-500/10">
+          <div className="flex items-center gap-3">
+            <span className="text-lg">⚠️</span>
+            <div>
+              <p className="text-sm font-extrabold text-white sm:text-base">
+                {totalIssuesCount === 0
+                  ? "0 Mobile Issues Found"
+                  : `${totalIssuesCount} Mobile & Security ${totalIssuesCount === 1 ? "Issue" : "Issues"} Found`}
+              </p>
+              <p className="text-xs text-slate-300">
+                {totalIssuesCount > 0
+                  ? "See how these issues impact your business below, then unlock the exact fixes."
+                  : "Your site passed all mobile diagnostic checks."}
+              </p>
+            </div>
+          </div>
+          {!data.isUnlocked && totalIssuesCount > 0 && (
+            <span style={{ padding: "6px 14px" }} className="whitespace-nowrap rounded-full border border-amber-400/40 bg-slate-950/80 text-xs font-bold text-amber-300">
+              🔒 {totalIssuesCount} {totalIssuesCount === 1 ? "Issue" : "Issues"} Locked
+            </span>
+          )}
+        </div>
+
         <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-900/70 p-6 sm:p-8">
           <p className="text-xs font-bold tracking-wider text-emerald-400 uppercase">
             Business Owner Summary
@@ -345,54 +395,250 @@ export default function ReportPage() {
           )}
         </div>
 
-        {/* Dual Monetization Conversion Box */}
+        {/* Focused 3-Option Conversion Grid */}
         {!data.isUnlocked && (
-          <div className="mt-10 grid gap-6 sm:mt-12 md:grid-cols-2">
-            <div className="flex flex-col justify-between overflow-hidden rounded-3xl border border-amber-500/40 bg-gradient-to-b from-amber-500/10 to-slate-900 p-6 sm:p-8">
-              <div>
-                <span className="text-xs font-bold tracking-wider text-amber-400 uppercase">
-                  🔓 Full Diagnostic Report
-                </span>
-                <h3 className="mt-2 text-xl font-bold">
-                  Unlock All {lockedCount}{' '}
-                  {lockedCount === 1 ? 'Hidden Issue' : 'Hidden Issues'} &amp;
-                  Fix Blueprint
-                </h3>
-                <p className="mt-2 text-sm text-slate-300">
-                  Reveal your blurred category scores, every hidden issue
-                  found on your site, and step-by-step fix instructions.
-                </p>
-              </div>
-              <div className="mt-6">
-                <UnlockReportButton
-                  auditId={data.id}
-                  lockedCount={lockedCount}
-                />
-              </div>
+          <div style={{ marginTop: "48px" }}>
+            <div style={{ marginBottom: "28px" }}>
+              <span className="text-xs font-bold tracking-widest text-emerald-400 uppercase">
+                Next Steps
+              </span>
+              <h2 className="mt-1 text-xl font-extrabold text-white sm:text-2xl">
+                Choose How You Want to Fix These Issues
+              </h2>
             </div>
 
-            <div className="flex flex-col justify-between overflow-hidden rounded-3xl border border-emerald-500/30 bg-slate-900/80 p-6 sm:p-8">
-              <div>
-                <span className="text-xs font-bold tracking-wider text-emerald-400 uppercase">
-                  ⚡ Hands-Free Engineering
-                </span>
-                <h3 className="mt-2 text-xl font-bold">
-                  Want Us to Fix Everything for You?
-                </h3>
-                <p className="mt-2 text-sm text-slate-300">
-                  Skip the technical work. Our engineers will fix all{' '}
-                  {lockedCount} issues directly on your live site within 48
-                  hours.
-                </p>
+            <div style={{ gap: "24px" }} className="grid sm:grid-cols-2 lg:grid-cols-3">
+              {/* 1. Self-Serve ($29) */}
+              <div style={{ padding: "26px" }} className="flex flex-col justify-between rounded-2xl border-2 border-emerald-400 bg-gradient-to-b from-emerald-500/15 via-slate-900 to-slate-950 shadow-xl">
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-extrabold tracking-wider text-emerald-300 uppercase">Self-Serve</span>
+                    <span style={{ padding: "3px 10px" }} className="rounded-full bg-emerald-400 text-[10px] font-black text-slate-950 uppercase">
+                      Most Popular
+                    </span>
+                  </div>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-3xl font-black text-white">$29</span>
+                    <span className="text-xs text-slate-300">/ one-time</span>
+                  </div>
+                  <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
+                    Unlock all blurred scores, hidden issues &amp; exact copy-paste code fixes for this site.
+                  </p>
+                </div>
+                <div className="mt-6">
+                  <UnlockReportButton auditId={data.id} lockedCount={lockedCount} />
+                </div>
               </div>
-              <div className="mt-6">
+
+              {/* 2. Agency Pass ($199/week — Center Card) */}
+              <div style={{ padding: "26px" }} className="flex flex-col justify-between rounded-2xl border-2 border-emerald-400/75 bg-gradient-to-b from-emerald-500/10 via-slate-900 to-slate-950 shadow-xl">
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-extrabold tracking-wider text-emerald-300 uppercase">Agency Pass</span>
+                    <span style={{ padding: "3px 10px" }} className="rounded-full bg-emerald-400 text-[10px] font-black text-slate-950 uppercase">
+                      Recommended
+                    </span>
+                  </div>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-3xl font-black text-white">$199</span>
+                    <span className="text-xs text-slate-300">/ week</span>
+                  </div>
+                  <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
+                    Auditing multiple client sites? Get unlimited scans &amp; unlocked code fixes for 7 days.
+                  </p>
+                </div>
+                <a
+                  href="/contact?plan=agency-weekly"
+                  style={{ padding: "12px 16px" }}
+                  className="mt-6 block w-full rounded-xl bg-emerald-400 text-center text-xs font-extrabold text-slate-950 transition hover:bg-emerald-300"
+                >
+                  Get Weekly Agency Pass →
+                </a>
+              </div>
+
+              {/* 3. Done-For-You ($499+) */}
+              <div style={{ padding: "26px" }} className="flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-900/70">
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold tracking-wider text-amber-400 uppercase">Done-For-You</span>
+                    <span style={{ padding: "3px 10px" }} className="rounded-full bg-slate-800 text-[10px] font-semibold text-slate-300">
+                      48h Delivery
+                    </span>
+                  </div>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-3xl font-extrabold text-white">$499+</span>
+                    <span className="text-xs text-slate-400">/ project</span>
+                  </div>
+                  <p className="mt-2.5 text-xs leading-relaxed text-slate-400">
+                    No developer? Our engineers patch every speed, security &amp; mobile issue on your live site.
+                  </p>
+                </div>
                 <a
                   href="#done-for-you"
-                  className="inline-flex w-full items-center justify-center rounded-xl bg-emerald-500 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-400"
+                  style={{ padding: "12px 16px" }}
+                  className="mt-6 block w-full rounded-xl border border-slate-700 bg-slate-800 text-center text-xs font-bold text-white transition hover:bg-slate-700"
                 >
                   Request Done-For-You Fix →
                 </a>
               </div>
+            </div>
+
+            {/* Explore More Offers Inline Toggle */}
+            <div style={{ marginTop: "32px" }}>
+              <div style={{ marginTop: "32px" }}>
+              <div style={{ textAlign: "center" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowMorePlans((prev) => {
+                      const next = !prev;
+                      if (next) {
+                        setTimeout(() => {
+                          document.getElementById("extra-plans-drawer")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                        }, 80);
+                      }
+                      return next;
+                    });
+                  }}
+                  style={{ padding: "13px 28px" }}
+                  className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-slate-900/90 text-xs font-bold text-emerald-300 transition hover:border-emerald-400 hover:bg-slate-800"
+                >
+                  <span>
+                    {showMorePlans
+                      ? "Hide Extra Plans & Offers ↑"
+                      : "Explore More Plans & Offers (Site Upgrades & Monthly Care) ↓"}
+                  </span>
+                </button>
+              </div>
+
+              {showMorePlans && (
+                <div id="extra-plans-drawer" style={{ marginTop: "24px", gap: "24px" }} className="grid sm:grid-cols-2">
+                  {/* Site Upgrade ($799+) */}
+                  <div style={{ padding: "26px" }} className="flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-900/80">
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold tracking-wider text-sky-400 uppercase">Site Upgrade</span>
+                        <span style={{ padding: "3px 10px" }} className="rounded-full bg-slate-800 text-[10px] font-semibold text-slate-300">
+                          Custom Scope
+                        </span>
+                      </div>
+                      <div className="mt-4 flex items-baseline gap-1">
+                        <span className="text-3xl font-extrabold text-white">$799+</span>
+                        <span className="text-xs text-slate-400">/ custom</span>
+                      </div>
+                      <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
+                        Upgrade your store or site—eliminate bugs, improve navigation &amp; add custom features.
+                      </p>
+                      <ul className="mt-4 space-y-2 border-t border-slate-800 pt-4 text-xs text-slate-300">
+                        <li>✓ Fix slow legacy code &amp; mobile bugs</li>
+                        <li>✓ Add new features or streamline UI</li>
+                      </ul>
+                    </div>
+                    <a
+                      href="/contact?plan=site-upgrade"
+                      style={{ padding: "12px 16px" }}
+                      className="mt-6 block w-full rounded-xl border border-slate-700 bg-slate-800 text-center text-xs font-bold text-white transition hover:bg-slate-700"
+                    >
+                      Request Upgrade Quote →
+                    </a>
+                  </div>
+
+                  {/* Monthly Care ($249/month) */}
+                  <div style={{ padding: "26px" }} className="flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-900/80">
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold tracking-wider text-purple-400 uppercase">Monthly Care</span>
+                        <span style={{ padding: "3px 10px" }} className="rounded-full bg-slate-800 text-[10px] font-semibold text-slate-300">
+                          Recurring
+                        </span>
+                      </div>
+                      <div className="mt-4 flex items-baseline gap-1">
+                        <span className="text-3xl font-extrabold text-white">$249</span>
+                        <span className="text-xs text-slate-400">/ month</span>
+                      </div>
+                      <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
+                        Continuous speed, security &amp; uptime care so your website stays fast every week.
+                      </p>
+                      <ul className="mt-4 space-y-2 border-t border-slate-800 pt-4 text-xs text-slate-300">
+                        <li>✓ Weekly speed &amp; security checks</li>
+                        <li>✓ Priority monthly bug fixes &amp; UI edits</li>
+                      </ul>
+                    </div>
+                    <a
+                      href="/contact?plan=monthly-care"
+                      style={{ padding: "12px 16px" }}
+                      className="mt-6 block w-full rounded-xl border border-slate-700 bg-slate-800 text-center text-xs font-bold text-white transition hover:bg-slate-700"
+                    >
+                      Start Monthly Care →
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+
+              {showMorePlans && (
+                <div style={{ marginTop: "24px", gap: "24px" }} className="grid sm:grid-cols-2">
+                  {/* Extra Plan 1: Site Upgrade ($799+) */}
+                  <div style={{ padding: "26px" }} className="flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-900/80">
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold tracking-wider text-sky-400 uppercase">Site Upgrade</span>
+                        <span style={{ padding: "3px 10px" }} className="rounded-full bg-slate-800 text-[10px] font-semibold text-slate-300">
+                          Custom Scope
+                        </span>
+                      </div>
+                      <div className="mt-4 flex items-baseline gap-1">
+                        <span className="text-3xl font-extrabold text-white">$799+</span>
+                        <span className="text-xs text-slate-400">/ custom</span>
+                      </div>
+                      <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
+                        Upgrade your store or site—eliminate bugs, improve navigation &amp; add custom features.
+                      </p>
+                      <ul className="mt-4 space-y-2 border-t border-slate-800 pt-4 text-xs text-slate-300">
+                        <li>✓ Fix slow legacy code &amp; mobile bugs</li>
+                        <li>✓ Add new features or streamline UI</li>
+                      </ul>
+                    </div>
+                    <a
+                      href="/contact?plan=site-upgrade"
+                      style={{ padding: "12px 16px" }}
+                      className="mt-6 block w-full rounded-xl border border-slate-700 bg-slate-800 text-center text-xs font-bold text-white transition hover:bg-slate-700"
+                    >
+                      Request Upgrade Quote →
+                    </a>
+                  </div>
+
+                  {/* Extra Plan 2: Monthly Care ($249/month) */}
+                  <div style={{ padding: "26px" }} className="flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-900/80">
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold tracking-wider text-purple-400 uppercase">Monthly Care</span>
+                        <span style={{ padding: "3px 10px" }} className="rounded-full bg-slate-800 text-[10px] font-semibold text-slate-300">
+                          Recurring
+                        </span>
+                      </div>
+                      <div className="mt-4 flex items-baseline gap-1">
+                        <span className="text-3xl font-extrabold text-white">$249</span>
+                        <span className="text-xs text-slate-400">/ month</span>
+                      </div>
+                      <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
+                        Continuous speed, security &amp; uptime care so your website stays fast every week.
+                      </p>
+                      <ul className="mt-4 space-y-2 border-t border-slate-800 pt-4 text-xs text-slate-300">
+                        <li>✓ Weekly speed &amp; security checks</li>
+                        <li>✓ Priority monthly bug fixes &amp; UI edits</li>
+                      </ul>
+                    </div>
+                    <a
+                      href="/contact?plan=monthly-care"
+                      style={{ padding: "12px 16px" }}
+                      className="mt-6 block w-full rounded-xl border border-slate-700 bg-slate-800 text-center text-xs font-bold text-white transition hover:bg-slate-700"
+                    >
+                      Start Monthly Care →
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

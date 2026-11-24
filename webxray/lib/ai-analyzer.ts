@@ -26,8 +26,7 @@ const AuditReportSchema = z.object({
 export type AiAuditReport = z.infer<typeof AuditReportSchema>;
 
 const FALLBACK_MODELS = [
-  'gemini-2.5-flash',
-  'gemini-2.5-flash-lite',
+  'gemini-3.8-flash',
 ] as const;
 
 export async function analyzeTelemetryWithAI(
@@ -61,7 +60,8 @@ Rules:
     try {
       const { output } = await generateText({
         model: google(modelId),
-        maxRetries: 2,
+        maxRetries: 0,
+        abortSignal: AbortSignal.timeout(25000),
         output: Output.object({
           schema: AuditReportSchema,
         }),
