@@ -10,7 +10,7 @@ export default function RefundPage() {
         <h2 className="text-lg font-semibold text-white">2. Exceptions &amp; Technical Issues</h2>
         <p>If a technical error prevented your paid report from unlocking, or if the scan data was corrupted due to a platform malfunction, we will either re-run your audit manually or issue a full 100% refund within 7 days of purchase.</p>
         <h2 className="text-lg font-semibold text-white">3. How to Request Support</h2>
-        <p>To request assistance or a refund review, email your Report ID to <span className="text-emerald-400">core.infrastructure.lab@gmail.com</span> within 7 days.</p>
+        <p>To request assistance or a refund review, email your Report ID to <span className="text-emerald-400">ali.webxray@gmail.com</span> within 7 days.</p>
       </div>
     </main>
   );

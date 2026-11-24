@@ -12,7 +12,7 @@ export default function TermsPage() {
         <h2 className="text-lg font-semibold text-white">3. Payments &amp; Billing</h2>
         <p>All payments are securely processed by our Merchant of Record, Paddle. Access to unlocked digital code fixes is granted immediately upon payment confirmation.</p>
         <h2 className="text-lg font-semibold text-white">4. Contact</h2>
-        <p>For questions regarding these terms, contact us at <span className="text-emerald-400">core.infrastructure.lab@gmail.com</span>.</p>
+        <p>For questions regarding these terms, contact us at <span className="text-emerald-400">ali.webxray@gmail.com</span>.</p>
       </div>
     </main>
   );
