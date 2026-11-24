@@ -204,51 +204,38 @@ export default function ReportPage() {
         </div>
 
         {/* Top Issues Found Alert Banner */}
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-amber-500/35 bg-amber-500/10 px-6 py-4">
-          <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-base text-amber-300">
-              ⚠️
+        <div
+          style={{ marginTop: "28px", padding: "20px 24px" }}
+          className={`flex flex-wrap items-center justify-between gap-4 rounded-2xl border ${
+            totalIssuesCount === 0
+              ? "border-emerald-500/40 bg-emerald-500/10"
+              : "border-amber-500/40 bg-amber-500/10"
+          }`}
+        >
+          <div className="flex items-center gap-3.5">
+            <span
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg ${
+                totalIssuesCount === 0 ? "bg-emerald-500/20" : "bg-amber-500/20"
+              }`}
+            >
+              {totalIssuesCount === 0 ? "✅" : "⚠️"}
             </span>
             <div>
-              <p className="text-sm font-extrabold text-white sm:text-base">
+              <p className="text-base font-extrabold text-white sm:text-lg">
                 {totalIssuesCount === 0
-                  ? "0 Mobile Issues Found"
+                  ? "0 Mobile Issues Found — Looking Great!"
                   : `${totalIssuesCount} Mobile & Security ${totalIssuesCount === 1 ? "Issue" : "Issues"} Found`}
               </p>
               <p className="text-xs text-slate-300">
                 {totalIssuesCount > 0
                   ? "Review the business impact below, then unlock the exact code fixes."
-                  : "Your site passed all mobile diagnostic checks."}
-              </p>
-            </div>
-          </div>
-          {!data.isUnlocked && totalIssuesCount > 0 && (
-            <span className="rounded-full border border-amber-400/40 bg-slate-950/70 px-3.5 py-1.5 text-xs font-bold text-amber-300">
-              🔒 {totalIssuesCount} {totalIssuesCount === 1 ? "Issue" : "Issues"} Locked Below
-            </span>
-          )}
-        </div>
-
-        {/* Business Owner Profit & Loss Summary (Zero Engineering Jargon) */}
-        <div style={{ marginTop: "28px", padding: "18px 24px" }} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-amber-500/40 bg-amber-500/10">
-          <div className="flex items-center gap-3">
-            <span className="text-lg">⚠️</span>
-            <div>
-              <p className="text-sm font-extrabold text-white sm:text-base">
-                {totalIssuesCount === 0
-                  ? "0 Mobile Issues Found"
-                  : `${totalIssuesCount} Mobile & Security ${totalIssuesCount === 1 ? "Issue" : "Issues"} Found`}
-              </p>
-              <p className="text-xs text-slate-300">
-                {totalIssuesCount > 0
-                  ? "See how these issues impact your business below, then unlock the exact fixes."
-                  : "Your site passed all mobile diagnostic checks."}
+                  : "Your website passed all core mobile speed, security, and trust checks."}
               </p>
             </div>
           </div>
           {!data.isUnlocked && totalIssuesCount > 0 && (
             <span style={{ padding: "6px 14px" }} className="whitespace-nowrap rounded-full border border-amber-400/40 bg-slate-950/80 text-xs font-bold text-amber-300">
-              🔒 {totalIssuesCount} {totalIssuesCount === 1 ? "Issue" : "Issues"} Locked
+              🔒 {totalIssuesCount} {totalIssuesCount === 1 ? "Issue" : "Issues"} Locked Below
             </span>
           )}
         </div>
@@ -297,11 +284,22 @@ export default function ReportPage() {
                 📈 Expected Upside After Fixing (What You Gain)
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-300">
-                Fixing {totalIssuesCount > 0 ? `all ${totalIssuesCount}` : 'these'}{' '}
-                flagged issues makes your mobile pages feel fast, safe, and
-                reliable. More of the visitors you are already paying to bring
-                in will stay, trust your brand, and convert into paying
-                customers—giving you higher sales from the exact same traffic.
+                {totalIssuesCount > 0 ? (
+                  <>
+                    Fixing all {totalIssuesCount} flagged issues makes your
+                    mobile pages feel fast, safe, and reliable. More of the
+                    visitors you are already paying to bring in will stay, trust
+                    your brand, and convert into paying customers—giving you
+                    higher sales from the exact same traffic.
+                  </>
+                ) : (
+                  <>
+                    Your mobile foundation is already solid. To keep this edge
+                    as you scale ads, you can protect your site with ongoing
+                    weekly health monitoring or add custom conversion features
+                    to turn even more visitors into buyers.
+                  </>
+                )}
               </p>
             </div>
           </div>
