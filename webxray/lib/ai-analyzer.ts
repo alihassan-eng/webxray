@@ -47,6 +47,8 @@ Rules:
    - SEO & UI: Start at 100. Deduct 10-15 pts only if hasMetaDescription is false, hasOgImage is false, hasH1 is false, hasHorizontalOverflow is true, or imagesMissingAlt > 0.
 2. Only report real issues found in the telemetry. Never invent fake issues—if all checks pass, return an empty issues array [].
 3. Write "businessImpact" in plain, persuasive business English, naming the exact missing tag(s) or header(s).
+3b. CRITICAL CSP & HEADER REPORTING RULE:
+   - If securityHeaders.metaContentSecurityPolicy is true AND securityHeaders.contentSecurityPolicy is false, state both facts side by side in the issue title: "CSP present in HTML. CSP and X-Frame-Options response headers absent." (and explain that <meta> CSP cannot enforce frame-ancestors/clickjacking protection).
 4. CRITICAL STACK-MATCHING RULE for "technicalFix":
    - Inspect "detectedStack" carefully and always state the exact missing tag(s) or header(s) at the top.
    - If detectedStack indicates "Next.js", provide Next.js (next.config.ts / metadata) code including full CSP & X-Frame-Options.
