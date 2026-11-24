@@ -40,7 +40,7 @@ export default function ContactPage() {
       <div className="mt-8 space-y-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-sm">
         <p><strong className="text-white">Response Time:</strong> Under 2 hours (WhatsApp) / Under 4 hours (Email)</p>
         <p><strong className="text-white">Services:</strong> Automated Mobile Diagnostics ($29) &amp; Done-For-You Fixes ($499+)</p>
-        <p><strong className="text-white">Hours:</strong> Monday – Saturday, 9:00 AM – 8:00 PM (PKT / UTC+5)</p>
+        <p><strong className="text-white">Hours:</strong> Monday – Saturday, Global Engineering Support — Overlapping US & EU Business Hours</p>
       </div>
     </main>
   );

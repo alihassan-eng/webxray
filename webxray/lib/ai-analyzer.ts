@@ -40,10 +40,11 @@ Analyze the following mobile telemetry data collected from an iPhone 14 viewport
 ${JSON.stringify(cleanTelemetry, null, 2)}
 
 Rules:
-1. Calculate realistic, well-calibrated scores (0-100) grounded strictly in the telemetry above:
-   - Security: Start at 100 if HTTPS is active. Deduct 10 pts if strictTransportSecurity is false, and 5-8 pts each if contentSecurityPolicy or xFrameOptions is false. If HTTPS, HSTS, CSP, and X-Frame-Options are all true, Security MUST be 100.
-   - Performance: Start at 100. Deduct points proportionally only if TTFB > 600ms, loadEventMs > 3500ms, totalRequests > 90, or largeImages (>500KB) exist.
-   - SEO & UI: Start at 100. Deduct 10-15 pts only if hasMetaDescription is false, hasOgImage is false, hasH1 is false, hasHorizontalOverflow is true, or imagesMissingAlt > 0.
+1. Calculate strict, revenue-weighted scores (0-100) grounded strictly in the telemetry above:
+   - Security (High Weight — Hack & Clickjacking Risk): Start at 100 if HTTPS is active (40 if HTTP). Deduct 18 pts if contentSecurityPolicy is false, 15 pts if xFrameOptions is false, and 12 pts if strictTransportSecurity is false.
+   - Performance (High Weight — 30%+ Mobile Bounce Risk): Start at 100. Deduct 22-32 pts if loadEventMs > 2500ms or TTFB > 600ms, and 10 pts if totalRequests > 65.
+   - SEO & UI (Minor/Ordinary Weight): Start at 100. Deduct 6-8 pts each for missing meta description, missing og:image, or missing image alt attributes.
+   - CRITICAL OVERALL CAP: If ANY security header is missing or mobile loadEventMs > 2500ms, overallScore MUST be between 52 and 72 (never 80+ green) so the business owner sees real urgency.
 2. Only report real issues found in the telemetry. Never invent fake issues—if all checks pass, return an empty issues array [].
 3. Write "businessImpact" in plain, persuasive business English, naming the exact missing tag(s) or header(s).
 3b. CRITICAL CSP & HEADER REPORTING RULE:
@@ -189,23 +190,43 @@ function buildFallbackReport(t: XrayTelemetry): AiAuditReport {
   }
 
   const securityScore = t.finalUrl.startsWith('https://')
-    ? Math.min(
-        100,
-        84 +
-          (t.securityHeaders.strictTransportSecurity ? 6 : 0) +
-          (t.securityHeaders.contentSecurityPolicy ? 6 : 0) +
-          (t.securityHeaders.xFrameOptions ? 4 : 0)
+    ? Math.max(
+        42,
+        100 -
+          (t.securityHeaders.contentSecurityPolicy ? 0 : 18) -
+          (t.securityHeaders.xFrameOptions ? 0 : 15) -
+          (t.securityHeaders.strictTransportSecurity ? 0 : 12)
       )
-    : 45;
-  const performanceScore = Math.max(65, Math.min(99, Math.round(100 - t.timing.loadEventMs / 150)));
-  const seoScore = Math.max(
-    60,
-    100 -
-      (t.domAndSeo.hasMetaDescription ? 0 : 12) -
-      (t.domAndSeo.hasOgImage ? 0 : 10) -
-      Math.min(15, t.domAndSeo.imagesMissingAlt * 3)
+    : 35;
+
+  const performanceScore = Math.max(
+    45,
+    Math.min(
+      100,
+      100 -
+        (t.timing.loadEventMs > 4000
+          ? 32
+          : t.timing.loadEventMs > 2500
+            ? 22
+            : Math.round(t.timing.loadEventMs / 250)) -
+        (t.timing.totalRequests > 65 ? 10 : 0)
+    )
   );
-  const overallScore = Math.round((securityScore + performanceScore + seoScore) / 3);
+
+  const seoScore = Math.max(
+    55,
+    100 -
+      (t.domAndSeo.hasMetaDescription ? 0 : 8) -
+      (t.domAndSeo.hasOgImage ? 0 : 8) -
+      Math.min(12, t.domAndSeo.imagesMissingAlt * 2)
+  );
+
+  let overallScore = Math.round(
+    securityScore * 0.4 + performanceScore * 0.4 + seoScore * 0.2
+  );
+  if (issues.length > 0 && overallScore > 72) {
+    overallScore = Math.max(56, 72 - issues.length * 3);
+  }
 
   return {
     overallScore,
