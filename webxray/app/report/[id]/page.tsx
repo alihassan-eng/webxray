@@ -90,7 +90,8 @@ export default function ReportPage() {
             Try Another URL
           </button>
         </div>
-      </main>
+      <div className="mt-8"><DoneForYouCard auditId={data.id} targetUrl={data.targetUrl} /></div>
+    </main>
     );
   }
 
@@ -244,7 +245,7 @@ export default function ReportPage() {
               </div>
 
             </div>
-            <DoneForYouCard auditId={data.id} targetUrl={data.targetUrl} />
+            
           </div>
         )}
       </div>
