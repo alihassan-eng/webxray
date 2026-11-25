@@ -147,7 +147,7 @@ export default function ReportPage() {
                   {overallScore}
                 </div>
                 <div className="mt-1 text-xs font-medium text-slate-400">
-                  Overall
+                  Overall Index
                 </div>
               </div>
 
@@ -171,12 +171,7 @@ export default function ReportPage() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-center gap-1">
-                      <span
-                        aria-hidden="true"
-                        className="select-none text-3xl font-extrabold text-slate-500 blur-[7px]"
-                      >
-                        84
-                      </span>
+                      <span style={{ filter: "blur(7px)", userSelect: "none" }} aria-hidden="true">88</span>
                       <span className="text-xs text-amber-400">🔒</span>
                     </div>
                   )}
@@ -186,6 +181,10 @@ export default function ReportPage() {
                 </div>
               ))}
             </div>
+            <p style={{ marginTop: "14px" }} className="text-[11px] leading-relaxed text-slate-400">
+              <strong className="font-semibold text-slate-300">Proprietary WebXray Standard:</strong>{' '}
+              Scored independently on real iPhone 14 rendering, conversion friction &amp; enterprise security posture — not generic lab speed averages.
+            </p>
           </div>
 
           {data.screenshotUrl && (
