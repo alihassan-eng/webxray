@@ -46,7 +46,7 @@ export function UnlockReportButton({
         setIsOpening(true);
         setTimeout(() => setIsOpening(false), 4000);
         paddle.Checkout.open({
-          settings: { displayMode: 'overlay', theme: 'dark', locale: 'en' },
+          settings: { displayMode: 'overlay', theme: 'light', locale: 'en' },
           items: [{ priceId, quantity: 1 }],
           customData: { auditId },
         });

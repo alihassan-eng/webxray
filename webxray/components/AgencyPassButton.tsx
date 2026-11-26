@@ -54,7 +54,7 @@ export function AgencyPassButton({
         setIsOpening(true);
         setTimeout(() => setIsOpening(false), 4000);
         paddle.Checkout.open({
-          settings: { displayMode: 'overlay', theme: 'dark', locale: 'en' },
+          settings: { displayMode: 'overlay', theme: 'light', locale: 'en' },
           items: [{ priceId: agencyPriceId, quantity: 1 }],
           customData: { plan: 'agency-weekly-199', ...(auditId ? { auditId } : {}) },
         });
