@@ -28,3 +28,42 @@ input:-internal-autofill-selected {
   border-color: #334155 !important;
   transition: background-color 99999s ease-in-out 0s !important;
 }
+
+/* Dark Premium Scrollbar & Dark Browser Autofill */
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #020617;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+  border: 2px solid #020617;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #0f172a inset !important;
+  -webkit-text-fill-color: #f8fafc !important;
+  caret-color: #f8fafc !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
