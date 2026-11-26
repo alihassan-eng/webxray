@@ -74,7 +74,7 @@ export function UnlockReportButton({
 
   if (status === 'SUCCESS') {
     return (
-      <div className="rounded-xl whitespace-nowrap border border-amber-400/40 bg-amber-400/10 p-4 text-center text-xs font-medium text-amber-200">
+      <div className="rounded-xl border border-amber-400/40 bg-amber-400/10 p-4 text-center text-xs font-medium text-amber-200">
         ✅ Request received! We are sending your unlocked full report &amp; payment link to your email within 15 minutes.
       </div>
     );
@@ -82,7 +82,7 @@ export function UnlockReportButton({
 
   if (showFallbackForm) {
     return (
-      <form onSubmit={handleFallbackSubmit} className="space-y-2.5 rounded-xl whitespace-nowrap border border-amber-400/30 bg-slate-950/90 p-3.5">
+      <form onSubmit={handleFallbackSubmit} className="space-y-2.5 rounded-xl border border-amber-400/30 bg-slate-950/90 p-3.5">
         <p className="text-xs text-slate-300">
           Enter your email to receive the unlocked full report &amp; instant invoice ($29):
         </p>
