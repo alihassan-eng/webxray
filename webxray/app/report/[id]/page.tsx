@@ -453,7 +453,7 @@ export default function ReportPage() {
                       Auditing client websites? Run unlimited scans &amp; unlock every code fix for 7 days.
                     </p>
                   </div>
-                  <AgencyPassButton style={{ padding: "12px 16px" }} className="mt-6 block w-full cursor-pointer rounded-xl bg-emerald-400 text-center text-xs font-extrabold text-slate-950 shadow-md shadow-emerald-400/20 transition hover:bg-emerald-300" />
+                  <AgencyPassButton auditId={data.id} style={{ padding: "12px 16px" }} className="mt-6 block w-full cursor-pointer rounded-xl bg-emerald-400 text-center text-xs font-extrabold text-slate-950 shadow-md shadow-emerald-400/20 transition hover:bg-emerald-300" />
                 </div>
 
                 {/* 3. Monthly Care ($249/month) */}
@@ -519,7 +519,7 @@ export default function ReportPage() {
                         Auditing multiple client sites? Get unlimited scans &amp; unlocked code fixes for 7 days.
                       </p>
                     </div>
-                    <AgencyPassButton style={{ padding: "12px 16px" }} className="mt-6 block w-full cursor-pointer rounded-xl bg-emerald-400 text-center text-xs font-extrabold text-slate-950 shadow-md shadow-emerald-400/20 transition hover:bg-emerald-300" />
+                    <AgencyPassButton auditId={data.id} style={{ padding: "12px 16px" }} className="mt-6 block w-full cursor-pointer rounded-xl bg-emerald-400 text-center text-xs font-extrabold text-slate-950 shadow-md shadow-emerald-400/20 transition hover:bg-emerald-300" />
                   </div>
 
                   <div style={{ padding: "26px" }} className="flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-900/70">

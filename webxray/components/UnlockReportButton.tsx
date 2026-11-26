@@ -20,7 +20,7 @@ export function UnlockReportButton({
     if (!token) return;
 
     initializePaddle({
-      environment: 'production',
+      environment: token.startsWith('test_') ? 'sandbox' : 'production',
       token,
       eventCallback(data) {
         if (data.name === 'checkout.completed') {

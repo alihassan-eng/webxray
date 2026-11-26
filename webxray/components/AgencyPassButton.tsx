@@ -5,9 +5,11 @@ import { initializePaddle, Paddle } from '@paddle/paddle-js';
 import { submitFixLead } from '@/app/actions/lead';
 
 export function AgencyPassButton({
+  auditId,
   className = '',
   style,
 }: {
+  auditId?: string;
   className?: string;
   style?: React.CSSProperties;
 }) {
@@ -17,10 +19,13 @@ export function AgencyPassButton({
 
   useEffect(() => {
     const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-    if (!token) return;
+    if (!token) {
+      console.warn('[WebXray Paddle] NEXT_PUBLIC_PADDLE_CLIENT_TOKEN is missing in this environment.');
+      return;
+    }
 
     initializePaddle({
-      environment: 'production',
+      environment: token.startsWith('test_') ? 'sandbox' : 'production',
       token,
       eventCallback(data) {
         if (data.name === 'checkout.completed') {
@@ -31,20 +36,27 @@ export function AgencyPassButton({
       .then((paddleInstance) => {
         if (paddleInstance) setPaddle(paddleInstance);
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error('[WebXray Paddle] Init error:', err);
+      });
   }, []);
 
   const handleCheckout = () => {
     const agencyPriceId = process.env.NEXT_PUBLIC_PADDLE_AGENCY_PRICE_ID;
+    if (!agencyPriceId) {
+      console.warn('[WebXray Paddle] NEXT_PUBLIC_PADDLE_AGENCY_PRICE_ID is missing.');
+    }
 
     if (paddle && agencyPriceId) {
       try {
         paddle.Checkout.open({
           items: [{ priceId: agencyPriceId, quantity: 1 }],
-          customData: { plan: 'agency-weekly-199' },
+          customData: { plan: 'agency-weekly-199', ...(auditId ? { auditId } : {}) },
         });
         return;
-      } catch {}
+      } catch (err) {
+        console.error('[WebXray Paddle] Checkout open error:', err);
+      }
     }
 
     setShowFallbackForm(true);
@@ -53,18 +65,22 @@ export function AgencyPassButton({
   async function handleFallbackSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus('LOADING');
-    const formData = new FormData(e.currentTarget);
-    formData.append('auditId', 'AGENCY_PASS_199');
-    formData.append('targetUrl', '[$199/WEEK AGENCY PASS REQUEST]');
+    try {
+      const formData = new FormData(e.currentTarget);
+      if (auditId) formData.append('auditId', auditId);
+      formData.append('targetUrl', '[$199/WEEK AGENCY PASS REQUEST]');
 
-    const res = await submitFixLead(formData);
-    setStatus(res.success ? 'SUCCESS' : 'ERROR');
+      const res = await submitFixLead(formData);
+      setStatus(res?.success ? 'SUCCESS' : 'ERROR');
+    } catch {
+      setStatus('ERROR');
+    }
   }
 
   if (status === 'SUCCESS') {
     return (
       <div className="mt-6 rounded-xl border border-emerald-400/40 bg-emerald-500/10 p-3.5 text-center text-xs font-medium text-emerald-200">
-        ✅ Agency Pass activated / requested! Check your email for instant access details.
+        ✅ Agency Pass request received! Check your email for instant access details.
       </div>
     );
   }
@@ -82,6 +98,9 @@ export function AgencyPassButton({
           placeholder="founder@agency.com"
           className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none"
         />
+        {status === 'ERROR' && (
+          <p className="text-[11px] text-rose-400">Could not send right now—email ali.webxray@gmail.com directly.</p>
+        )}
         <button
           type="submit"
           disabled={status === 'LOADING'}
