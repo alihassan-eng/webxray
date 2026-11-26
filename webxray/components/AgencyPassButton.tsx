@@ -31,7 +31,10 @@ export function AgencyPassButton({
       eventCallback(data) {
         if (data.name === 'checkout.loaded' || data.name === 'checkout.closed') setIsOpening(false);
         if (data.name === 'checkout.completed') {
+          const exp = Date.now() + 7 * 24 * 60 * 60 * 1000;
+          document.cookie = `wx_agency_pass=${exp}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax; Secure`;
           setStatus('SUCCESS');
+          setTimeout(() => window.location.reload(), 1200);
         }
       },
     })

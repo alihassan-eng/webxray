@@ -13,7 +13,7 @@ function normalizeDomain(rawUrl: string): string {
 }
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
@@ -38,7 +38,11 @@ export async function GET(
       normalizeDomain(item.targetUrl) === currentDomain && item.isUnlocked && (Date.now() - new Date(item.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000)
   );
 
-  const effectiveUnlocked = audit.isUnlocked || hasPaidForDomain;
+  const cookieHeader = req.headers.get("cookie") || "";
+  const passMatch = cookieHeader.match(/wx_agency_pass=(\d+)/);
+  const hasActiveAgencyPass = passMatch ? Number(passMatch[1]) > Date.now() : false;
+
+  const effectiveUnlocked = audit.isUnlocked || hasPaidForDomain || hasActiveAgencyPass;
 
   const isRepeatScan = allAudits.some(
     (item) =>
