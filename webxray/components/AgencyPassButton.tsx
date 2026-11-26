@@ -37,7 +37,7 @@ export function AgencyPassButton({
         if (paddleInstance) setPaddle(paddleInstance);
       })
       .catch((err) => {
-        console.error('[WebXray Paddle] Init error:', err);
+        console.warn('[WebXray Paddle] Init error:', err);
       });
   }, []);
 
@@ -55,7 +55,7 @@ export function AgencyPassButton({
         });
         return;
       } catch (err) {
-        console.error('[WebXray Paddle] Checkout open error:', err);
+        console.warn('[WebXray Paddle] Checkout open error:', err);
       }
     }
 
