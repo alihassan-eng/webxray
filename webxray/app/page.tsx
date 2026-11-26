@@ -1,3 +1,4 @@
+import { AgencyPassButton } from '@/components/AgencyPassButton';
 import { HeroScanForm } from '../components/HeroScanForm';
 
 const FEATURES = [
