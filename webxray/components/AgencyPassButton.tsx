@@ -16,6 +16,7 @@ export function AgencyPassButton({
   const [paddle, setPaddle] = useState<Paddle>();
   const [showFallbackForm, setShowFallbackForm] = useState(false);
   const [status, setStatus] = useState<'IDLE' | 'LOADING' | 'SUCCESS' | 'ERROR'>('IDLE');
+  const [isOpening, setIsOpening] = useState(false);
 
   useEffect(() => {
     const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
@@ -28,6 +29,7 @@ export function AgencyPassButton({
       environment: token.startsWith('test_') ? 'sandbox' : 'production',
       token,
       eventCallback(data) {
+        if (data.name === 'checkout.loaded' || data.name === 'checkout.closed') setIsOpening(false);
         if (data.name === 'checkout.completed') {
           setStatus('SUCCESS');
         }
@@ -49,7 +51,10 @@ export function AgencyPassButton({
 
     if (paddle && agencyPriceId) {
       try {
+        setIsOpening(true);
+        setTimeout(() => setIsOpening(false), 4000);
         paddle.Checkout.open({
+          settings: { displayMode: 'overlay', theme: 'dark', locale: 'en' },
           items: [{ priceId: agencyPriceId, quantity: 1 }],
           customData: { plan: 'agency-weekly-199', ...(auditId ? { auditId } : {}) },
         });
@@ -122,7 +127,7 @@ export function AgencyPassButton({
         'mt-6 block w-full cursor-pointer rounded-xl bg-emerald-400 py-3 text-center text-xs font-extrabold text-slate-950 transition hover:bg-emerald-300'
       }
     >
-      Get Weekly Agency Pass →
+      {isOpening ? 'Opening Secure Checkout...' : 'Get Weekly Agency Pass →'}
     </button>
   );
 }

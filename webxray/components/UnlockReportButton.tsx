@@ -14,6 +14,7 @@ export function UnlockReportButton({
   const [paddle, setPaddle] = useState<Paddle>();
   const [showFallbackForm, setShowFallbackForm] = useState(false);
   const [status, setStatus] = useState<'IDLE' | 'LOADING' | 'SUCCESS' | 'ERROR'>('IDLE');
+  const [isOpening, setIsOpening] = useState(false);
 
   useEffect(() => {
     const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
@@ -23,6 +24,7 @@ export function UnlockReportButton({
       environment: token.startsWith('test_') ? 'sandbox' : 'production',
       token,
       eventCallback(data) {
+        if (data.name === 'checkout.loaded' || data.name === 'checkout.closed') setIsOpening(false);
         if (data.name === 'checkout.completed') {
           setTimeout(() => window.location.reload(), 1500);
         }
@@ -41,7 +43,10 @@ export function UnlockReportButton({
 
     if (paddle && priceId) {
       try {
+        setIsOpening(true);
+        setTimeout(() => setIsOpening(false), 4000);
         paddle.Checkout.open({
+          settings: { displayMode: 'overlay', theme: 'dark', locale: 'en' },
           items: [{ priceId, quantity: 1 }],
           customData: { auditId },
         });
@@ -110,7 +115,7 @@ export function UnlockReportButton({
       onClick={handleCheckout}
       className="w-full cursor-pointer rounded-xl whitespace-nowrap bg-amber-400 py-3 text-xs font-bold text-slate-950 transition hover:bg-amber-300 active:scale-[0.98]"
     >
-      {buttonLabel}
+      {isOpening ? 'Opening Secure Checkout...' : buttonLabel}
     </button>
   );
 }
